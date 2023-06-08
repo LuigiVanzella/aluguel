@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina Aluguel</title>
+    <link rel="stylesheet" href="css/cliente.css">
+    <style>
+        table{
+            margin-top: 20px;
+            border-collapse: collapse;
+            color: black;
+            width: 1000px;
+            margin-left: 50%;
+            transform: translate(-50%);
+        }
+        th, td{
+            border: 2px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th{
+            background-color: red;
+        }
+        td{
+            background-color: rgba(255, 0, 0, 0.872);
+        }
+        
+    </style>
+    <script>
+        let Aluguel = []; 
+
+
+        let resgatarCliente = localStorage.getItem("vetorCliente");
+        let cliente = JSON.parse(resgatarCliente);
+
+        let resgatarImovel = localStorage.getItem("vetorImovel");
+        let imovel = JSON.parse(resgatarImovel);
+
+        let stringAluguel = JSON.stringify(Aluguel);
+        localStorage.setItem("vetorAluguel",stringAluguel);
+        
+     //////////////////////////////////
+      
+
+        function IncluirAluguel(){
+            let objCpfCliente = document.getElementById("CpfCliente");
+            let objCodigo = document.getElementById("codigo");
+            let objCpfFiador = document.getElementById("cpfFiador");
+            let objNomeFiador = document.getElementById("nomeFiador");
+            let objDataEntrada = document.getElementById("entrada");
+            let objDataSaida = document.getElementById("saida");
+            let objvalor = document.getElementById("valor");
+
+            let ListaAluguel = {
+                cpf:objCpfCliente.value,
+                codigo:objCodigo.value,
+                cpf_fiador:objCpfFiador.value,
+                nome_fiador:objNomeFiador.value,
+                data_entrada:objDataEntrada.value,
+                data_saida:objDataSaida.value,
+                valor:objvalor.value
+
+                }
+            
+            
+            let flag=0;
+            let flagCliente = false;
+            let flagImovel = false;
+            for(let i=0; i<cliente.length; i++){
+                if (cliente[i].cpf == ListaAluguel.cpf){
+                    flagCliente = true;
+                    break;
+                }
+            }
+            
+            for(let i=0; i<imovel.length; i++){
+                if (imovel[i].codigo == ListaAluguel.codigo){
+                    flagImovel = true;
+                    break;
+                }
+            }
+
+            for(let i=0; i<Aluguel.length; i++){
+                if (Aluguel[i].codigo == ListaAluguel.codigo){
+                    flag = 1;
+                    break;
+                }
+            }
+
+            if (ListaAluguel.cpf == ""){
+                alert("Campo Cpf está vazio");
+            }
+            else if (ListaAluguel.codigo == ""){
+                alert("Campo Codigo está vazio");
+            }
+            else if (flagCliente == false){
+                alert("O cadastro deste aluguel não foi possível, pois o Cliente não foram cadastrado anteriormente!");
+            }
+            else if (flagImovel == false){
+                alert("O cadastro deste aluguel não foi possível, pois o Imovel não foram cadastrado anteriormente!");
+            }
+            else if (flag == 1){
+                alert("O cadastro deste aluguel não foi possível, pois esse Imovel já esta alugado!");
+            }
+            
+            else{
+                Aluguel.push(ListaAluguel);
+                alert("Aluguel efetuado com sucesso");
+            }
+            let stringAluguel = JSON.stringify(Aluguel);
+            localStorage.setItem("vetorAluguel",stringAluguel);
+            
+            Tabela();
+
+            console.log(Aluguel);
+            
+
+        }
+
+        function Tabela(){
+                let tbody = document.getElementById("tbody");
+                tbody.innerHTML = "";
+
+                for (let i=0; i<Aluguel.length; i++){
+                    let linha = document.createElement("tr");
+                    for(let prop in Aluguel[i]){
+                        let td = document.createElement("td");
+                        td.textContent = Aluguel[i][prop];
+                        linha.appendChild(td);
+                    }
+                    tbody.appendChild(linha);
+
+                }
+
+        }
+
+        
+//-------------------------------------------------------------------------------------------------------
+
+
+        function FuncaoAlterarAluguel(){
+
+            let flag = -1;
+            objcodigo = document.getElementById("codigo").value;
+            objCpf = document.getElementById("CpfCliente").value;
+            for(let i=0; i<Aluguel.length; i++){
+                if(objcodigo == Aluguel[i].codigo || objCpf == Aluguel[i].cpf){
+                    Aluguel[i].cpf_fiador = document.getElementById("cpfFiador").value;
+                    Aluguel[i].nome_fiador = document.getElementById("nomeFiador").value;
+                    Aluguel[i].data_entrada = document.getElementById("entrada").value;
+                    Aluguel[i].data_saida = document.getElementById("saida").value;
+                    Aluguel[i].valor = document.getElementById("valor").value;
+
+                    flag = 1
+                }
+            }
+            if(flag != -1){
+                alert("Aluguel alterado com sucesso")
+            }
+
+
+            Tabela();
+            console.log(Aluguel);
+
+        }
+
+        function Alterar(){
+            let flag=-1;
+            objcodigo = document.getElementById("codigo").value;
+            objCpf = document.getElementById("CpfCliente").value;
+            for(let i=0; i<Aluguel.length; i++){
+                if (objcodigo == Aluguel[i].codigo && objCpf == Aluguel[i].cpf){
+                    flag = i;
+                }
+            }
+            if(flag != -1){
+                document.getElementById("CpfCliente").value = Aluguel[flag].cpf;
+                document.getElementById("codigo").value = Aluguel[flag].codigo;
+                document.getElementById("cpfFiador").value = Aluguel[flag].cpf_fiador;
+                document.getElementById("nomeFiador").value = Aluguel[flag].nome_fiador;
+                document.getElementById("entrada").value = Aluguel[flag].data_entrada;
+                document.getElementById("saida").value = Aluguel[flag].data_saida;
+                document.getElementById("valor").value = Aluguel[flag].valor;
+
+                document.getElementById("salvaralteracao").innerHTML = "<button onclick='FuncaoAlterarAluguel()'>" + "Salvar Alteração"  + "</button>";
+            
+            }
+            else{
+                alert("Não é possivel alterar esse Aluguel, pois não foi encontrado");
+            }
+            
+
+            let stringAluguel = JSON.stringify(Aluguel);
+            localStorage.setItem("vetorAluguel",stringAluguel);
+
+
+        }
+            
+
+
+    //------------------------------------------------------------------
+    
+        function Excluir(){
+                
+            let flag=-1;
+            objcpf = document.getElementById("CpfCliente").value;
+            objCodigo = document.getElementById("codigo").value;
+            for(let i=0; i<Aluguel.length; i++){
+                if (Aluguel[i].codigo == objCodigo && Aluguel[i].cpf == objcpf){
+                    flag = i;
+                }
+                
+            }
+            if (flag != -1){
+                Aluguel.splice(flag,1);
+                alert ("Aluguel removido com sucesso");
+            }
+            else{
+                alert("Aluguel não removido, pois não foi encontrado");
+            }
+
+            let stringAluguel = JSON.stringify(Aluguel);
+            localStorage.setItem("vetorAluguel",stringAluguel);
+
+            console.log(Aluguel);
+
+            Tabela();
+        }
+        
+    //---------------------------------------------------------------------
+
+
+        function ListaUm(){
+            let flag = -1;
+            objCodigo = document.getElementById("codigo").value;
+            for(let i=0; i<Aluguel.length; i++){
+                if (Aluguel[i].codigo == objCodigo){
+                    flag = i;
+                }
+            }
+
+            if(flag != -1){
+                alert("CPF Cliente: " + Aluguel[flag].cpf +
+                "\nCODIGO: " + Aluguel[flag].codigo +
+                "\nCPF Fiador: " + Aluguel[flag].cpf_fiador +
+                "\nNome do Fiador: " + Aluguel[flag].nome_fiador +
+                "\nData de Entrada: " + Aluguel[flag].data_entrada +
+                "\nData de Saida: " + Aluguel[flag].data_saida +
+                "\nValor: " + Aluguel[flag].valor);
+            }
+            else{
+                alert("Aluguel não encontrado");
+            }
+
+        }
+
+    //----------------------------------------------------------------------
+
+        function ListarTudo(){
+            str = "";
+            for (let i=0; i<Aluguel.length; i++){
+                str += "\nAluguel - " +[i+1] +
+                "\nCPF Cliente: " + Aluguel[i].cpf +
+                "\nCODIGO: " + Aluguel[i].codigo +
+                "\nCPF Fiador: " + Aluguel[i].cpf_fiador +
+                "\nNome do Fiador: " + Aluguel[i].nome_fiador +
+                "\nData de Entrada: " + Aluguel[i].data_entrada +
+                "\nData de Saida: " + Aluguel[i].data_saida +
+                "\nValor: " + Aluguel[i].valor;
+            }
+            if(str==""){
+                alert("Nenhum Aluguel encontrado");
+            }
+            else{
+                alert(str);
+            }
+        }
+    
+        //------------------------------------------------------------------------
+
+
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>Imobiliaria Uniao</h1>
+        <h2>Aluguel</h2>
+    </header>
+    <article>
+        <form class="principal">
+            <label for="CpfCliente">Cpf do Cliente:</label>
+            <input type="text" id="CpfCliente" placeholder="Obrigatorio*"><br><br>
+
+            <label for="codigo">Codigo do Imovel:</label>
+            <input type="number" id="codigo" placeholder="Obrigatorio*"><br><br>
+
+            <label for="cpfFiador">CPF do Fiador:</label>
+            <input type="text" id="cpfFiador"><br><br>
+
+            <label for="nomeFiador">Nome do Fiador:</label>
+            <input type="text" id="nomeFiador"><br><br>
+
+            <label for="entrada">Data de Entrada:</label>
+            <input type="date" id="entrada"><br><br>
+
+            <label for="saida">Data de Saida:</label>
+            <input type="date" id="saida"><br><br>
+
+            <label for="valor">Valor:</label>
+            <input type="number" id="valor"><br><br>
+
+        </form>
+        <div id="salvaralteracao" class="principal"></div>
+
+        <div id="botoes" class="principal">
+            <button onclick="IncluirAluguel()">Cadastrar</button>
+            <button onclick="Alterar()">Alterar</button>
+            <button onclick="Excluir()">Excluir</button>
+            <button onclick="ListaUm()">Listar Um</button>
+            <button onclick="ListarTudo()">Listar Todos</button>
+        </div>
+    </article>
+    <table>
+        <thead>
+            <tr>
+                <th>CPF Cliente</th>
+                <th>CODIGO Imovel</th>
+                <th>CPF Fiador</th>
+                <th>Nome Fiador</th>
+                <th>Data de Entrada</th>
+                <th>Data de saida</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+            
+        </tbody>
+    </table>
+</body>
+</html>
